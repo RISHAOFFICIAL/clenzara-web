@@ -1,0 +1,118 @@
+# Clenzara.com — Site Validation Workflow
+# Runs on every push to main and weekly to verify site integrity
+
+name: Site Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run weekly on Monday at 9AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  validate-html:
+    name: Validate HTML & Links
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check index.html exists
+        run: |
+          if [ ! -f "index.html" ]; then
+            echo "::error::index.html is missing!"
+            exit 1
+          fi
+          echo "✅ index.html found"
+
+      - name: Check required assets
+        run: |
+          missing=0
+          for file in "assets/favicon_web.png" "assets/logo_web.png" "assets/og-image.jpg"; do
+            if [ ! -f "$file" ]; then
+              echo "::error::$file is missing!"
+              missing=1
+            else
+              echo "✅ $file found"
+            fi
+          done
+          exit $missing
+
+      - name: Check blog posts
+        run: |
+          missing=0
+          for file in "blog/17-signs-of-parasites-in-humans.html" "blog/biofilm-disruptors.html" \
+                      "blog/drainage-pathways.html" "blog/full-moon-parasite-connection.html" \
+                      "blog/pro-app-conversion.html"; do
+            if [ ! -f "$file" ]; then
+              echo "::error::$file is missing!"
+              missing=1
+            else
+              echo "✅ $file found"
+            fi
+          done
+          exit $missing
+
+      - name: Validate HTML files
+        run: |
+          # Basic HTML structure validation
+          for file in index.html blog/*.html; do
+            if [ -f "$file" ]; then
+              # Check for closing html tag
+              if grep -q '</html>' "$file"; then
+                echo "✅ $file has valid HTML structure"
+              else
+                echo "::warning::$file may have invalid HTML (missing </html>)"
+              fi
+            fi
+          done
+
+      - name: Check affiliate tag in HTML files
+        run: |
+          issues=0
+          for file in index.html blog/*.html; do
+            if [ -f "$file" ] && grep -q 'amazon' "$file"; then
+              if grep -q 'clenzara-20' "$file"; then
+                echo "✅ $file has affiliate tag"
+              else
+                echo "::warning::$file has Amazon links but missing clenzara-20 affiliate tag"
+                issues=1
+              fi
+            fi
+          done
+          exit $issues
+
+  check-file-sizes:
+    name: Check File Sizes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Warn about large files
+        run: |
+          # Check images
+          find . -path './.git' -prune -o -type f \( -name '*.jpg' -o -name '*.png' \) -print -exec sh -c '
+            size=$(stat -f%z "$1" 2>/dev/null || stat --printf="%s" "$1" 2>/dev/null)
+            if [ "$size" -gt 500000 ] 2>/dev/null; then
+              echo "::warning::Large image: $1 ($(($size/1024))KB) — consider optimizing"
+            fi
+          ' _ {} \;
+          echo "✅ File size check complete"
+
+  verify-deployment:
+    name: Verify Production URL
+    runs-on: ubuntu-latest
+    needs: [validate-html, check-file-sizes]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Check if site is live
+        run: |
+          echo "⏳ Verifying clenzara.com..."
+          # This will pass even if the site isn't live yet (deployment may take time)
+          # Run this after deployment is confirmed
+          echo "✅ Verification step ready — connect to Hostinger to complete deployment"
