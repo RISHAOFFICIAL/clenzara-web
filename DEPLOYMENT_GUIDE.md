@@ -53,7 +53,7 @@ You can skip this step unless you deploy a *different* script in the future.
 
 ## Step 3: Update GA4 Measurement ID (ALREADY DONE)
 
-Note: We have already updated `index.html` and `clenzara-v3.html` with your GA4 ID: **`G-GBZ5SW0PG9`**.
+Note: We have already updated `index.html` and `clenzara-v3.html` with your GA4 ID: **`G-XXXXXXXXXX`**.
 
 You do not need to edit the code. Simply verify that data is flowing in your Google Analytics dashboard once the site is live.
 
