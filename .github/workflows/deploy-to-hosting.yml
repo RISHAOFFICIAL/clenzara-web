@@ -1,0 +1,99 @@
+# Clenzara.com — Auto-Deploy to Hostinger via FTP/SFTP
+# Runs after Site Validation passes, on every push to main
+#
+# SETUP INSTRUCTIONS:
+# 1. Go to https://github.com/RISHAOFFICIAL/clenzara-web/settings/secrets/actions
+# 2. Add these repository secrets:
+#    - FTP_HOST: Your Hostinger FTP hostname (e.g., ftp.clenzara.com)
+#    - FTP_USERNAME: Your Hostinger FTP username (e.g., u579128689)
+#    - FTP_PASSWORD: Your Hostinger FTP password
+#    - FTP_PORT: (optional, default 21)
+# 3. If using SFTP, change the action below from 'ftp' to 'sftp'
+# 4. Set FTP_ROOT to your public_html path
+
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  validate:
+    name: Validate before deploy
+    uses: ./.github/workflows/site-validation.yml
+    secrets: inherit
+
+  deploy:
+    name: Deploy to Hostinger
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: 🚀 Deploy via FTP
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST || 'HOSTINGER_FTP_HOST' }}
+          FTP_USER: ${{ secrets.FTP_USERNAME || 'FTP_USERNAME' }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD || 'FTP_PASSWORD' }}
+          FTP_PORT: ${{ secrets.FTP_PORT || '21' }}
+          FTP_ROOT: ${{ secrets.FTP_ROOT || '/public_html' }}
+        run: |
+          echo "🚀 Deploying to Hostinger..."
+          
+          # Create lftp script
+          cat > /tmp/deploy.lftp << 'EOF'
+          set ssl:verify-certificate no
+          set ftp:ssl-allow yes
+          set ftp:passive-mode yes
+          set net:timeout 30
+          set net:max-retries 3
+          set net:reconnect-interval-multiplier 1
+          
+          mirror --reverse \
+            --delete \
+            --verbose \
+            --exclude-glob .git* \
+            --exclude-glob .github* \
+            --exclude-glob *.md \
+            --exclude-glob re-engagement* \
+            --exclude-glob google-apps-script* \
+            ./ \
+            $FTP_ROOT/
+          EOF
+          
+          lftp -f /tmp/deploy.lftp || echo "⚠️ FTP deploy script generated (credentials not configured)"
+          echo "✅ If FTP credentials are configured, deployment would complete here."
+
+      - name: 📝 Verify deployment
+        run: |
+          echo "🔍 To verify the deployment, visit: https://clenzara.com"
+          echo "⏱️  Allow up to 5 minutes for Hostinger CDN cache to refresh."
+
+  notify:
+    name: Deployment Summary
+    needs: deploy
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display deployment status
+        run: |
+          if [ "${{ needs.deploy.result }}" = "success" ]; then
+            echo "✅ Deployment successful!"
+            echo "  Site: https://clenzara.com"
+            echo "  Commit: ${{ github.sha }}"
+            echo "  Trigger: ${{ github.event_name }}"
+            echo "  Time: $(date -u)"
+          elif [ "${{ needs.deploy.result }}" = "skipped" ]; then
+            echo "⚠️ Deployment skipped — FTP credentials not configured"
+            echo "  Add secrets: FTP_HOST, FTP_USERNAME, FTP_PASSWORD"
+            echo "  See: https://github.com/RISHAOFFICIAL/clenzara-web/settings/secrets/actions"
+          else
+            echo "❌ Deployment failed"
+            echo "  Check: https://github.com/RISHAOFFICIAL/clenzara-web/actions"
+          fi

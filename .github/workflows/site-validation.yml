@@ -12,6 +12,7 @@ on:
     # Run weekly on Monday at 9AM UTC
     - cron: '0 9 * * 1'
   workflow_dispatch:  # Allow manual trigger
+  workflow_call:      # Allow this workflow to be called by other workflows
 
 jobs:
   validate-html:
@@ -113,6 +114,9 @@ jobs:
       - name: Check if site is live
         run: |
           echo "⏳ Verifying clenzara.com..."
-          # This will pass even if the site isn't live yet (deployment may take time)
-          # Run this after deployment is confirmed
-          echo "✅ Verification step ready — connect to Hostinger to complete deployment"
+          HTTP_CODE=$(curl -sI -o /dev/null -w "%{http_code}" "https://clenzara.com" 2>&1)
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ clenzara.com is live (HTTP $HTTP_CODE)"
+          else
+            echo "::warning::clenzara.com returned HTTP $HTTP_CODE"
+          fi
