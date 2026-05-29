@@ -109,8 +109,10 @@ footer a{color:var(--primary-light)}
 .protocol-day.d1{background:#81c784}
 .protocol-day.d2{background:#66bb6a}
 .protocol-day.d3{background:var(--primary)}
+.spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .pulse-btn{animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(45,122,79,.6)}70%{box-shadow:0 0 0 12px rgba(45,122,79,0)}100%{box-shadow:0 0 0 0 rgba(45,122,79,0)}}
+
 @media(max-width:600px){.form-row{flex-direction:column}.hero h1{font-size:1.8rem}.nav-links{display:none}.social-proof{gap:1.5rem}}
 </style>
 </head>
@@ -125,13 +127,19 @@ footer a{color:var(--primary-light)}
 <section class="social-proof"><div class="proof-item"><div class="proof-number">15</div><div class="proof-label">Premium Ingredients</div></div><div class="proof-item"><div class="proof-number">4.7★</div><div class="proof-label">Average Rating</div></div><div class="proof-item"><div class="proof-number">1,700+</div><div class="proof-label">Happy Customers</div></div></section>
 
 <!-- Quiz Section -->
-<section class="quiz-section" id="quiz"><h2 class="section-title">⚠️ Bloating. Brain Fog. Fatigue.<br><span style="font-size:1.1rem;color:var(--primary);display:block;margin-top:.25rem">Is Your Gut Telling You Something?</span></h2><p style="color:var(--text-light);margin-bottom:1.5rem">7 rapid questions. 30 seconds. Discover your parasite risk level and get a <strong style="color:var(--primary)">Personalized 14-Day Drainage & Cleanse Protocol</strong> built around your unique symptom profile.</p>
+<section class="quiz-section" id="quiz"><h2 class="section-title">⚠️ Bloating. Brain Fog. Fatigue.<br><span style="font-size:1.1rem;color:var(--primary);display:block;margin-top:.25rem">Is Your Gut Telling You Something?</span></h2><p style="color:var(--text-light);margin-bottom:1.5rem">Personalized risk assessment. Discover your parasite risk level and get a <strong style="color:var(--primary)">Customized Protocol</strong> built around your unique symptom profile.</p>
 <div id="quizContainer" style="max-width:600px;margin:0 auto;text-align:left">
+<div id="quizProgressBarContainer" style="width: 100%; background: #eee; border-radius: 10px; height: 8px; margin-bottom: 20px; overflow: hidden; display:none;">
+    <div id="quizProgressBar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s;"></div>
+</div>
 <div id="quizQuestion" style="font-size:1.1rem;font-weight:600;color:var(--dark);margin-bottom:1rem"></div>
 <div id="quizOptions" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem"></div>
 <div id="quizProgress" style="font-size:.8rem;color:var(--text-light);text-align:center;margin-bottom:1rem"></div>
 <div id="quizResult" style="display:none;background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 15px rgba(0,0,0,.08)"></div>
-<div style="text-align:center"><button id="quizNextBtn" style="display:none;background:var(--primary);color:#fff;border:none;padding:.8rem 2rem;border-radius:50px;font-weight:700;font-size:1rem;cursor:pointer" onclick="nq()">Next →</button></div>
+<div style="display:flex; justify-content:space-between; align-items:center;">
+    <button id="quizBackBtn" style="visibility:hidden; background:none; border:none; color:var(--text-light); cursor:pointer; font-size:0.9rem;" onclick="prevQuestion()">← Back</button>
+    <button id="quizNextBtn" style="display:none;background:var(--primary);color:#fff;border:none;padding:.8rem 2rem;border-radius:50px;font-weight:700;font-size:1rem;cursor:pointer" onclick="nextQuestion()">Next →</button>
+</div>
 </div></section>
 
 <!-- Products: Core Protocol -->
@@ -235,22 +243,176 @@ footer a{color:var(--primary-light)}
 <footer><div class="footer-disclosure"><strong>Affiliate Disclosure:</strong> Clenzara.com is a participant in the Amazon Services LLC Associates Program. We earn commissions from qualifying purchases at no additional cost to you.</div><div class="footer-disclosure" style="margin-top:0.5rem;background:rgba(255,255,255,0.02)"><strong>FDA Disclaimer:</strong> The statements on this website have not been evaluated by the Food and Drug Administration. Our products and protocols are not intended to diagnose, treat, cure, or prevent any disease. Always consult a qualified healthcare provider before starting any supplement or cleanse protocol.</div><p>© <script>document.write(new Date().getFullYear())</script> Clenzara.com · <a href="/privacy-policy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Use</a> · <a href="mailto:hello@clenzara.com">hello@clenzara.com</a></p></footer>
 
 <script>
-const qq=[{q:"Do you experience chronic fatigue that doesn't improve with rest?",o:["Yes, regularly","Sometimes","Rarely"]},{q:"How often do you have bloating or digestive discomfort?",o:["Daily","A few times a week","Almost never"]},{q:"Do you have intense sugar or carb cravings?",o:["Yes, hard to control","Occasionally","No"]},{q:"Have you noticed unexplained skin issues?",o:["Yes, persistent","Comes and goes","No"]},{q:"Do you experience brain fog or difficulty concentrating?",o:["Frequently","Sometimes","Rarely"]},{q:"Have you traveled internationally or had food poisoning?",o:["Yes, multiple times","Once or twice","No"]},{q:"Do you wake up frequently during the night or grind your teeth?",o:["Yes, often","Occasionally","No"]}];let cq=0,sc=0,an=[];
-function sq(){cq=0;sc=0;an=[];document.getElementById('quizResult').style.display='none';document.getElementById('quizNextBtn').style.display='block';showQ();}
-function showQ(){const q=qq[cq];document.getElementById('quizQuestion').textContent=(cq+1)+'. '+q.q;const o=document.getElementById('quizOptions');o.innerHTML='';q.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.style.cssText='display:block;width:100%;padding:.8rem;border:2px solid #ddd;border-radius:12px;background:#fff;font-size:.95rem;cursor:pointer;margin-bottom:.5rem;text-align:left';b.onclick=function(){document.querySelectorAll('#quizOptions button').forEach(x=>{x.style.borderColor='#ddd';x.style.background='#fff'});this.style.borderColor='var(--primary)';this.style.background='#e8f5e9';an[cq]=i;sc+=(i===0?2:i===1?1:0);document.getElementById('quizNextBtn').style.display='block';};o.appendChild(b);});document.getElementById('quizProgress').textContent='Q'+(cq+1)+'/'+qq.length;document.getElementById('quizNextBtn').textContent=cq<qq.length-1?'Next →':'See Results';}
-function nq(){if(an[cq]===undefined){alert('Select an answer');return;}cq++;if(cq<qq.length)showQ();else showR();}
-function showR(){document.getElementById('quizQuestion').textContent='';document.getElementById('quizOptions').innerHTML='';document.getElementById('quizProgress').textContent='';document.getElementById('quizNextBtn').style.display='none';const r=document.getElementById('quizResult');r.style.display='block';let l,pct,emoji,symptomList,payoff,ctaLabel,ctaHref,urgency,phaseDots;
-const highHTML=`<div style="text-align:center"><div class="risk-meter high"><div class="pct">${sc}<span class="label">Score</span></div></div><h3 style="color:#e74c3c;font-size:1.4rem;margin-bottom:.5rem">High Parasite Risk Detected</h3><p style="color:var(--text-light);margin-bottom:.25rem;font-size:.9rem"><strong style="color:var(--dark)">Your symptom profile:</strong> Chronic bloating, brain fog, fatigue, sugar cravings, and sleep disruption strongly align with active parasitic burden.</p><div style="background:#fff3f0;border:1px solid #f5c6c6;border-radius:12px;padding:1rem;margin:1rem 0;text-align:left"><p style="font-weight:700;color:#c0392b;margin-bottom:.5rem;font-size:.9rem">📋 Your Personalized 14-Day Drainage & Cleanse Protocol</p><div class="protocol-strip"><div class="protocol-day d1" title="Days 1-3: Drainage Prep">1</div><div class="protocol-day d1" title="Days 1-3: Drainage Prep">2</div><div class="protocol-day d1" title="Days 1-3: Drainage Prep">3</div><div class="protocol-day d2" title="Days 4-10: Core Cleanse">4</div><div class="protocol-day d2" title="Days 4-10: Core Cleanse">5</div><div class="protocol-day d2" title="Days 4-10: Core Cleanse">6</div><div class="protocol-day d2" title="Days 4-10: Core Cleanse">7</div><div class="protocol-day d2" title="Days 4-10: Core Cleanse">8</div><div class="protocol-day d2" title="Days 4-10: Core Cleanse">9</div><div class="protocol-day d2" title="Days 4-10: Core Cleanse">10</div><div class="protocol-day d3" title="Days 11-14: Deep Cleanse">11</div><div class="protocol-day d3" title="Days 11-14: Deep Cleanse">12</div><div class="protocol-day d3" title="Days 11-14: Deep Cleanse">13</div><div class="protocol-day d3" title="Days 11-14: Deep Cleanse">14</div></div><div class="protocol-phase"><div class="phase-dot fill1">Phase 1<br>Drainage</div><div class="phase-dot fill2">Phase 2<br>Core Cleanse</div><div class="phase-dot fill3">Phase 3<br>Deep Cleanse</div></div><p style="font-size:.82rem;color:var(--text-light)"><strong>Phase 1 (Days 1-3):</strong> Open bile flow &amp; lymphatic pathways with binders and drainage herbs<br><strong>Phase 2 (Days 4-10):</strong> Wormwood + Biofilm Disruptors + Binders — the main cleanse<br><strong>Phase 3 (Days 11-14):</strong> Add full antimicrobial protocol + gut repair<br><em>Most people feel relief within 72 hours of starting Phase 1.</em></p></div><p style="font-size:.82rem;color:#c0392b;background:#ffe0e0;padding:.5rem;border-radius:8px;margin:.75rem 0">⏳ Die-off symptoms worsen if you start without drainage prep first. Follow the protocol order.</p><a href="#products" class="btn-primary" onclick="gtag('event','protocol_click',{event_category:'conversion',event_label:'High_Protocol'})">📋 View My 14-Day Protocol →</a><br><a href="#waitlist" class="btn-secondary" style="display:inline-block;color:var(--primary);border-color:var(--primary);margin-top:.5rem">🎯 Join Pro App — Get Free Protocol Tracker →</a></div>`;
-const moderateHTML=`<div style="text-align:center"><div class="risk-meter moderate"><div class="pct">${sc}<span class="label">Score</span></div></div><h3 style="color:#e67e22;font-size:1.4rem;margin-bottom:.5rem">Moderate Parasite Risk — Action Recommended</h3><p style="color:var(--text-light);margin-bottom:.25rem;font-size:.9rem"><strong style="color:var(--dark)">Your symptom profile:</strong> Occasional bloating, fluctuating energy, and intermittent brain fog suggest early-stage or low-grade parasitic activity.</p><div style="background:#fff8e6;border:1px solid #f5d78e;border-radius:12px;padding:1rem;margin:1rem 0;text-align:left"><p style="font-weight:700;color:#e67e22;margin-bottom:.5rem;font-size:.9rem">📋 Your Personalized 14-Day Drainage & Cleanse Protocol</p><div class="protocol-strip"><div class="protocol-day d1" title="Days 1-5: Drainage + Liver">1</div><div class="protocol-day d1" title="Days 1-5: Drainage + Liver">2</div><div class="protocol-day d1" title="Days 1-5: Drainage + Liver">3</div><div class="protocol-day d1" title="Days 1-5: Drainage + Liver">4</div><div class="protocol-day d1" title="Days 1-5: Drainage + Liver">5</div><div class="protocol-day d2" title="Days 6-12: Gentle Cleanse">6</div><div class="protocol-day d2" title="Days 6-12: Gentle Cleanse">7</div><div class="protocol-day d2" title="Days 6-12: Gentle Cleanse">8</div><div class="protocol-day d2" title="Days 6-12: Gentle Cleanse">9</div><div class="protocol-day d2" title="Days 6-12: Gentle Cleanse">10</div><div class="protocol-day d2" title="Days 6-12: Gentle Cleanse">11</div><div class="protocol-day d2" title="Days 6-12: Gentle Cleanse">12</div><div class="protocol-day d3" title="Days 13-14: Gut Repair">13</div><div class="protocol-day d3" title="Days 13-14: Gut Repair">14</div></div><div class="protocol-phase"><div class="phase-dot fill1">Phase 1<br>Drainage + Liver</div><div class="phase-dot fill2">Phase 2<br>Gentle Cleanse</div><div class="phase-dot fill3">Phase 3<br>Gut Repair</div></div><p style="font-size:.82rem;color:var(--text-light)"><strong>Phase 1 (Days 1-5):</strong> Drainage preparation + liver support (milk thistle, binders)<br><strong>Phase 2 (Days 6-12):</strong> Mild antimicrobial — start low, go slow to minimize die-off<br><strong>Phase 3 (Days 13-14):</strong> Gut lining repair &amp; probiotic re-inoculation<br><em>Because your symptoms are intermittent, a slower protocol reduces die-off discomfort.</em></p></div><p style="font-size:.82rem;color:#c7761a;background:#fff0cf;padding:.5rem;border-radius:8px;margin:.75rem 0">💡 Moderate risk can escalate to HIGH if left unaddressed. Early intervention is key.</p><a href="#products" class="btn-primary" onclick="gtag('event','protocol_click',{event_category:'conversion',event_label:'Moderate_Protocol'})">📋 Build My 14-Day Protocol →</a><br><a href="#waitlist" class="btn-secondary" style="display:inline-block;color:var(--primary);border-color:var(--primary);margin-top:.5rem">🎯 Join Pro App — Get Free Protocol Tracker →</a></div>`;
-const lowHTML=`<div style="text-align:center"><div class="risk-meter low"><div class="pct">${sc}<span class="label">Score</span></div></div><h3 style="color:#27ae60;font-size:1.4rem;margin-bottom:.5rem">Low Risk — Smart to Check</h3><p style="color:var(--text-light);margin-bottom:.25rem;font-size:.9rem"><strong style="color:var(--dark)">Your symptom profile</strong> shows minimal signs of parasitic activity. However, experts call parasites 'the silent epidemic' — up to 80% of carriers report no symptoms.</p><div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:12px;padding:1rem;margin:1rem 0;text-align:left"><p style="font-weight:700;color:#27ae60;margin-bottom:.5rem;font-size:.9rem">📋 Your Prevention-First 14-Day Gut Maintenance Protocol</p><div class="protocol-strip"><div class="protocol-day d1" title="Days 1-7: Gentle Drainage">1</div><div class="protocol-day d1" title="Days 1-7: Gentle Drainage">2</div><div class="protocol-day d1" title="Days 1-7: Gentle Drainage">3</div><div class="protocol-day d1" title="Days 1-7: Gentle Drainage">4</div><div class="protocol-day d1" title="Days 1-7: Gentle Drainage">5</div><div class="protocol-day d1" title="Days 1-7: Gentle Drainage">6</div><div class="protocol-day d1" title="Days 1-7: Gentle Drainage">7</div><div class="protocol-day d3" title="Days 8-14: Gut Repair">8</div><div class="protocol-day d3" title="Days 8-14: Gut Repair">9</div><div class="protocol-day d3" title="Days 8-14: Gut Repair">10</div><div class="protocol-day d3" title="Days 8-14: Gut Repair">11</div><div class="protocol-day d3" title="Days 8-14: Gut Repair">12</div><div class="protocol-day d3" title="Days 8-14: Gut Repair">13</div><div class="protocol-day d3" title="Days 8-14: Gut Repair">14</div></div><div class="protocol-phase"><div class="phase-dot fill1">Phase 1<br>Gentle Drainage</div><div class="phase-dot fill3">Phase 2<br>Gut Repair</div></div><p style="font-size:.82rem;color:var(--text-light)"><strong>Phase 1 (Days 1-7):</strong> Gentle drainage support + digestive enzymes + hydration<br><strong>Phase 2 (Days 8-14):</strong> Gut barrier repair + probiotic re-inoculation<br><em>Prevention is 10x easier than treatment. Maintain your gut health before symptoms appear.</em></p></div><p style="font-size:.82rem;color:#2e7d32;background:#e8f5e9;padding:.5rem;border-radius:8px;margin:.75rem 0">🌙 Parasites are most active during the full moon. Re-assess during your next lunar cycle.</p><a href="#products" class="btn-primary" onclick="gtag('event','protocol_click',{event_category:'conversion',event_label:'Low_Protocol'})">📋 Get My Prevention Protocol →</a><br><a href="#waitlist" class="btn-secondary" style="display:inline-block;color:var(--primary);border-color:var(--primary);margin-top:.5rem">🎯 Join Pro App — Get Free Protocol Tracker →</a></div>`;
-if(sc>=10){l='HIGH';r.innerHTML=highHTML}else if(sc>=5){l='MODERATE';r.innerHTML=moderateHTML}else{l='LOW';r.innerHTML=lowHTML}
-localStorage.setItem('clenzara_quiz_score',sc.toString());localStorage.setItem('clenzara_quiz_risk',l);
-if(typeof gtag!=='undefined')gtag('event','quiz_completed',{event_category:'engagement',event_label:'Risk:'+l});}
-document.addEventListener('DOMContentLoaded',sq);
-
+const quizData = {
+    tier1: [
+        { id: 'q1', category: 'gut', text: "How often do you experience bloating, gas, or digestive discomfort?", options: [{ text: "Never or rarely", score: 0 }, { text: "A few times a month", score: 1 }, { text: "Several times a week", score: 2 }, { text: "Every single day", score: 3 }], trigger: (score) => score >= 2, branch: 'gut_deep' },
+        { id: 'q2', category: 'fatigue', text: "How would you describe your energy levels?", options: [{ text: "Great — I wake up feeling rested", score: 0 }, { text: "Mild afternoon dips but generally okay", score: 1 }, { text: "Chronically fatigued despite adequate sleep", score: 2 }, { text: "Exhausted — it significantly affects my life", score: 3 }], trigger: (score) => score >= 2, branch: 'fatigue_deep' },
+        { id: 'q3', category: 'cognitive', text: "Do you experience brain fog or difficulty concentrating?", options: [{ text: "Rarely", score: 0 }, { text: "Sometimes", score: 1 }, { text: "Often — affects my focus daily", score: 2 }, { text: "Severely impacts my functioning", score: 3 }], trigger: (score) => score >= 2, branch: 'cognitive_deep' },
+        { id: 'q4', category: 'skin', text: "Do you have any unexplained skin issues?", options: [{ text: "None", score: 0 }, { text: "Occasional mild issues", score: 1 }, { text: "Persistent rashes, eczema, or acne", score: 2 }, { text: "Severe or worsening skin problems", score: 3 }], trigger: (score) => score >= 2, branch: 'skin_deep' },
+        { id: 'q5', category: 'other', text: "How strong are your sugar or carb cravings?", options: [{ text: "Minimal — easy to resist", score: 0 }, { text: "Moderate occasional cravings", score: 1 }, { text: "Strong — I think about it frequently", score: 2 }, { text: "I feel controlled by sugar cravings", score: 3 }] },
+        { id: 'q6', category: 'exposure', text: "Have you done any of these in the past 2 years? Select all that apply", type: 'multi', options: [{ text: "International travel", score: 2 }, { text: "Raw or undercooked meat or fish", score: 2 }, { text: "Outdoor pets not regularly dewormed", score: 2 }, { text: "Drank well water or unfiltered water", score: 1 }, { text: "None of the below", score: 0, exclusive: true }], trigger: (score) => score > 0, branch: 'exposure_deep' }
+    ],
+    branches: {
+        gut_deep: { name: "Digestive Health", message: "You mentioned significant digestive issues — let us dig a little deeper...", questions: [
+            { id: 'g1', category: 'gut', text: "Do you notice undigested food in your stool or significant changes in stool color or consistency?", options: [{ text: "No", score: 0 }, { text: "Occasionally", score: 1 }, { text: "Frequently", score: 2 }] },
+            { id: 'g2', category: 'gut', text: "Do you experience itching around the anal area, especially at night?", options: [{ text: "Never", score: 0 }, { text: "Occasionally", score: 1 }, { text: "Yes, regularly", score: 3 }] },
+            { id: 'g3', category: 'gut', text: "Have you been diagnosed with IBS, Crohn's, colitis, or SIBO — or told you have unexplained digestive issues?", options: [{ text: "No diagnosis", score: 0 }, { text: "Suspected but unconfirmed", score: 1 }, { text: "Yes, formally diagnosed", score: 2 }] }
+        ]},
+        fatigue_deep: { name: "Fatigue", message: "Chronic fatigue is one of the most common and overlooked signs — let us understand yours better.", questions: [
+            { id: 'f1', category: 'fatigue', text: "Do you feel unrefreshed even after a full night of sleep?", options: [{ text: "Sometimes", score: 1 }, { text: "Most mornings", score: 2 }, { text: "Every single morning", score: 3 }] },
+            { id: 'f2', category: 'fatigue', text: "Have you had blood work showing low iron, low B12, or anemia without a clear cause?", options: [{ text: "No or not tested", score: 0 }, { text: "Borderline low", score: 1 }, { text: "Yes, confirmed deficiency", score: 3 }] }
+        ]},
+        cognitive_deep: { name: "Cognitive Function", message: "Brain fog linked to gut issues is more common than people realize — let us understand yours.", questions: [
+            { id: 'c1', category: 'cognitive', text: "Has your brain fog worsened alongside your digestive symptoms?", options: [{ text: "Not sure", score: 0 }, { text: "Possibly", score: 1 }, { text: "Yes, they seem connected", score: 2 }] },
+            { id: 'c2', category: 'cognitive', text: "Have you noticed increased anxiety, mood changes, or depression alongside your other symptoms?", options: [{ text: "No", score: 0 }, { text: "Mild changes", score: 1 }, { text: "Significant mood or anxiety changes", score: 2 }] }
+        ]},
+        skin_deep: { name: "Skin Health", message: "Skin issues are often the body's external signal of internal inflammation — let us learn more.", questions: [
+            { id: 's1', category: 'skin', text: "Are your skin issues cyclical — do they get worse at predictable times like the full moon or your menstrual cycle?", options: [{ text: "No pattern I've noticed", score: 0 }, { text: "Possibly", score: 1 }, { text: "Yes, definitely cyclical", score: 2 }] },
+            { id: 's2', category: 'skin', text: "Have you tried elimination diets, topical treatments, or medications for your skin with little improvement?", options: [{ text: "Haven't tried", score: 0 }, { text: "Tried with some improvement", score: 1 }, { text: "Tried everything with no improvement", score: 2 }] }
+        ]},
+        exposure_deep: { name: "Exposure Risk", message: "Your exposure history is important — these questions help us assess your risk more precisely.", questions: [
+            { id: 'e1', category: 'exposure', text: "Did you experience any stomach illness, diarrhea, or gut issues during or after travel or after eating raw food?", options: [{ text: "No", score: 0 }, { text: "Mild brief illness", score: 1 }, { text: "Yes, significant illness", score: 3 }] },
+            { id: 'e2', category: 'exposure', text: "Do your pets sleep in your bed or have close physical contact with you regularly?", options: [{ text: "No pets or no close contact", score: 0 }, { text: "Occasional contact", score: 1 }, { text: "Daily close contact", score: 2 }] },
+            { id: 'e3', category: 'exposure', text: "Have you ever been told you had food poisoning, Giardia, traveler's diarrhea, or a stomach bug that never fully resolved?", options: [{ text: "No", score: 0 }, { text: "Had it but fully recovered", score: 1 }, { text: "Had it and never felt 100% since", score: 3 }] }
+        ]}
+    },
+    tier3: [
+        { id: 'u1', category: 'other', text: "Do you grind your teeth at night or experience unexplained jaw tension?", options: [{ text: "Never", score: 0 }, { text: "Occasionally", score: 1 }, { text: "Yes, regularly", score: 2 }, { text: "I've been told I do", score: 2 }] },
+        { id: 'u2', category: 'duration', text: "How long have you been experiencing these symptoms?", options: [{ text: "Less than 6 months", score: 1 }, { text: "6 months to 1 year", score: 2 }, { text: "1 to 3 years", score: 2 }, { text: "More than 3 years", score: 3 }] },
+        { id: 'u3', category: 'other', text: "Have you ever done a parasite cleanse before?", options: [{ text: "No, never", score: 0 }, { text: "Yes, briefly (under 30 days)", score: 1 }, { text: "Yes, full protocol", score: 0 }, { text: "Yes and symptoms returned", score: 2 }] }
+    ]
+};
+let currentQuestionIndex = 0, userAnswers = {}, questionFlow = [];
+function initQuiz() {
+    questionFlow = [...quizData.tier1, ...quizData.tier3];
+    currentQuestionIndex = 0; userAnswers = {};
+    document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizProgressBarContainer').style.display = 'block';
+    renderQuestion();
+}
+function updateQuestionFlow() {
+    let newFlow = [...quizData.tier1];
+    quizData.tier1.forEach(q => {
+        if (q.branch && userAnswers[q.id] !== undefined) {
+            let ans = userAnswers[q.id], score = 0;
+            if (Array.isArray(ans)) ans.forEach(i => score += q.options[i].score);
+            else score = q.options[ans].score;
+            if (q.trigger(score || ans)) {
+                let insertIndex = newFlow.findIndex(x => x.id === q.id) + 1;
+                newFlow.splice(insertIndex, 0, ...quizData.branches[q.branch].questions);
+            }
+        }
+    });
+    newFlow.push(...quizData.tier3);
+    questionFlow = newFlow;
+}
+function renderQuestion() {
+    const q = questionFlow[currentQuestionIndex]; if (!q) return;
+    let transitionMsg = '';
+    for (const key in quizData.branches) { if (quizData.branches[key].questions[0].id === q.id) { transitionMsg = quizData.branches[key].message; break; } }
+    const qContainer = document.getElementById('quizQuestion'), oContainer = document.getElementById('quizOptions'), nextBtn = document.getElementById('quizNextBtn'), backBtn = document.getElementById('quizBackBtn');
+    oContainer.innerHTML = '';
+    if (transitionMsg) { const msgDiv = document.createElement('div'); msgDiv.innerHTML = `<p style="font-style: italic; color: var(--primary); margin-bottom: 1rem; font-size:0.9rem;">${transitionMsg}<br><small style="color:var(--text-light)">This assessment is for educational purposes only. It is not a medical diagnosis.</small></p>`; oContainer.appendChild(msgDiv); }
+    qContainer.textContent = (currentQuestionIndex + 1) + '. ' + q.text;
+    const isMulti = q.type === 'multi';
+    q.options.forEach((opt, i) => {
+        const b = document.createElement('button'); b.textContent = opt.text; b.className = 'quiz-option-btn';
+        b.style.cssText = 'display:block;width:100%;padding:.8rem;border:2px solid #ddd;border-radius:12px;background:#fff;font-size:.95rem;cursor:pointer;margin-bottom:.5rem;text-align:left';
+        if (isMulti) { if (userAnswers[q.id] && userAnswers[q.id].includes(i)) { b.style.borderColor = 'var(--primary)'; b.style.background = '#e8f5e9'; } }
+        else { if (userAnswers[q.id] === i) { b.style.borderColor = 'var(--primary)'; b.style.background = '#e8f5e9'; } }
+        b.onclick = function() {
+            if (isMulti) {
+                if (opt.exclusive) userAnswers[q.id] = [i];
+                else {
+                    if (!userAnswers[q.id]) userAnswers[q.id] = [];
+                    userAnswers[q.id] = userAnswers[q.id].filter(idx => !q.options[idx].exclusive);
+                    const idx = userAnswers[q.id].indexOf(i);
+                    if (idx > -1) userAnswers[q.id].splice(idx, 1); else userAnswers[q.id].push(i);
+                }
+                renderQuestion();
+            } else {
+                userAnswers[q.id] = i;
+                document.querySelectorAll('.quiz-option-btn').forEach(x => { x.style.borderColor = '#ddd'; x.style.background = '#fff'; });
+                this.style.borderColor = 'var(--primary)'; this.style.background = '#e8f5e9';
+                setTimeout(() => { nextQuestion(); }, 300);
+            }
+        };
+        oContainer.appendChild(b);
+    });
+    const progress = ((currentQuestionIndex + 1) / questionFlow.length) * 100;
+    document.getElementById('quizProgressBar').style.width = progress + '%';
+    document.getElementById('quizProgress').textContent = `Question ${currentQuestionIndex + 1} of ~${questionFlow.length}`;
+    backBtn.style.visibility = currentQuestionIndex > 0 ? 'visible' : 'hidden';
+    nextBtn.style.display = isMulti || currentQuestionIndex === questionFlow.length - 1 ? 'block' : 'none';
+    nextBtn.textContent = currentQuestionIndex < questionFlow.length - 1 ? 'Next →' : 'See Results';
+}
+function nextQuestion() {
+    if (userAnswers[questionFlow[currentQuestionIndex].id] === undefined) { alert('Please select an answer'); return; }
+    updateQuestionFlow();
+    if (currentQuestionIndex < questionFlow.length - 1) { currentQuestionIndex++; renderQuestion(); }
+    else { calculateAndShowResults(); }
+}
+function prevQuestion() { if (currentQuestionIndex > 0) { currentQuestionIndex--; renderQuestion(); } }
+function calculateAndShowResults() {
+    const qContainer = document.getElementById('quizQuestion'), oContainer = document.getElementById('quizOptions'), progressContainer = document.getElementById('quizProgressBarContainer'), nextBtn = document.getElementById('quizNextBtn'), backBtn = document.getElementById('quizBackBtn');
+    qContainer.textContent = 'Analyzing your responses...';
+    oContainer.innerHTML = '<div style="text-align:center; padding: 2rem;"><div class="spinner"></div><p id="analysisFlags" style="margin-top:1rem; font-weight:600; color:var(--primary);"></p></div>';
+    progressContainer.style.display = 'none'; nextBtn.style.display = 'none'; backBtn.style.display = 'none';
+    const cats = {
+        gut: { score: 0, max: 10, weight: 0.35, label: 'Digestive Health' },
+        fatigue: { score: 0, max: 9, weight: 0.20, label: 'Fatigue & Energy' },
+        cognitive: { score: 0, max: 7, weight: 0.15, label: 'Cognitive Function' },
+        skin: { score: 0, max: 7, weight: 0.15, label: 'Skin Health' },
+        exposure: { score: 0, max: 15, weight: 0.15, label: 'Exposure Risk' },
+        duration: { score: 0, max: 3, weight: 0.10, label: 'Duration' },
+        other: { score: 0, max: 7, weight: 0.05, label: 'Other Symptoms' }
+    };
+    [...quizData.tier1, ...quizData.tier3, ...Object.values(quizData.branches).flatMap(b => b.questions)].forEach(q => {
+        const ans = userAnswers[q.id];
+        if (ans !== undefined) {
+            if (Array.isArray(ans)) ans.forEach(idx => { cats[q.category].score += q.options[idx].score; });
+            else cats[q.category].score += q.options[ans].score;
+        }
+    });
+    const flagged = Object.keys(cats).filter(k => cats[k].score / cats[k].max > 0.4).map(k => cats[k].label);
+    if (flagged.length > 0) { document.getElementById('analysisFlags').textContent = 'Flagged: ' + flagged.join(', '); }
+    setTimeout(() => { showFinalResults(cats, flagged); }, 2500);
+}
+function showFinalResults(cats, flagged) {
+    let wScore = 0; Object.keys(cats).forEach(k => { wScore += (cats[k].score / cats[k].max) * cats[k].weight; });
+    const finalScore = Math.min(Math.round(wScore * 100), 100);
+    let tier = 'Low', tierClass = 'low';
+    if (finalScore >= 75) { tier = 'Very High'; tierClass = 'high'; }
+    else if (finalScore >= 50) { tier = 'High'; tierClass = 'high'; }
+    else if (finalScore >= 25) { tier = 'Moderate'; tierClass = 'moderate'; }
+    const resultDiv = document.getElementById('quizResult'); resultDiv.style.display = 'block';
+    document.getElementById('quizQuestion').textContent = ''; document.getElementById('quizOptions').innerHTML = '';
+    let bullets = '';
+    if (cats.gut.score / cats.gut.max > 0.4) bullets += `<li><strong>Daily digestive distress</strong> — consistent with Giardia or Blastocystis activity which disrupts nutrient absorption</li>`;
+    if (cats.fatigue.score / cats.fatigue.max > 0.4) bullets += `<li><strong>Chronic fatigue despite adequate sleep</strong> — consistent with parasitic nutrient theft, particularly B12 and iron depletion</li>`;
+    if (cats.exposure.score / cats.exposure.max > 0.4) bullets += `<li><strong>High exposure risk</strong> — history suggests environmental or dietary contact with parasitic larvae</li>`;
+    const durationAns = userAnswers['u2'];
+    if (durationAns >= 2) bullets += `<li><strong>${quizData.tier3[1].options[durationAns].text} of symptoms</strong> — chronic duration significantly increases likelihood of established parasitic burden</li>`;
+    resultDiv.innerHTML = `
+        <div style="text-align:center">
+            <div class="risk-meter ${tierClass}"><div class="pct">${finalScore}<span class="label">Score</span></div></div>
+            <h3 style="color:var(--dark); font-size:1.4rem; margin-bottom:.5rem">${tier} Parasite Risk Detected</h3>
+            <p style="text-align:left; font-size:0.95rem; margin-bottom:1rem;">Your score of <strong>${finalScore}/100</strong> places you in the <strong>${tier} Risk</strong> category.</p>
+            <div style="text-align:left; background:#f9f9f9; padding:1rem; border-radius:12px; margin-bottom:1rem;">
+                <p style="font-weight:700; margin-bottom:0.5rem;">Based on your answers, your most significant indicators are:</p>
+                <ul style="padding-left:1.2rem; font-size:0.85rem; line-height:1.4;">
+                    ${bullets || '<li>General systemic inflammation and nutrient depletion indicators.</li>'}
+                </ul>
+            </div>
+            <p style="font-size:0.85rem; margin-bottom:1.5rem;"><strong>Your recommended protocol:</strong> ${finalScore >= 50 ? 'the Full 90-Day Intensive' : 'a 30-Day Targeted Cleanse'}. Based on your specific symptom pattern we recommend prioritizing these supplements first...</p>
+            <a href="#products" class="btn-primary" style="width:100%;">📋 View My Recommended Protocol →</a>
+            <p style="font-size:0.7rem; color:var(--text-light); margin-top:1rem;">This assessment is for educational purposes only. It is not a medical diagnosis. Always consult a licensed healthcare provider.</p>
+        </div>
+    `;
+    localStorage.setItem('clenzara_quiz_score', finalScore.toString()); localStorage.setItem('clenzara_quiz_risk', tier.toUpperCase());
+    if(typeof gtag !== 'undefined') gtag('event', 'quiz_completed', { 'event_category': 'engagement', 'event_label': 'Risk:' + tier });
+}
 function submitWaitlist(e){e.preventDefault();const n=document.getElementById('nameInput').value.trim(),em=document.getElementById('emailInput').value.trim();if(!em||!em.includes('@')){document.getElementById('formError').textContent='Please enter a valid email address.';document.getElementById('formError').style.display='block';return false}if(typeof gtag!=='undefined')gtag('event','waitlist_signup',{event_category:'conversion'});const p=new URLSearchParams(window.location.search);fetch('https://script.google.com/macros/s/AKfycbx3ue0Wyk6ombN9TTKZ8rZotHuQUdZI0wnhtu3wC6xOqAwrl47gV7DdbSSTrvqVOz9s/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:em,utm_source:p.get('utm_source')||'direct',utm_medium:p.get('utm_medium')||'',utm_campaign:p.get('utm_campaign')||'',timestamp:new Date().toISOString()}),mode:'no-cors'});document.getElementById('waitlistForm').style.display='none';document.getElementById('formSuccess').style.display='block';return false}
-
-// AI Wellness Coach
 const CR={high:{g:"Your quiz shows HIGH risk. Ready to start a protocol?",p:"Start with Serrapeptase + Wormwood + Activated Charcoal.",d:"Die-off is common. Use binders, hydrate, open drainage.",dr:"Ensure daily bowel movements, hydrate with minerals.",t:"Start 2 days before Full Moon.",x:"Start with drainage for 2 weeks then biofilm disruptors."},moderate:{g:"Your MODERATE score is worth attention.",p:"Start with Magnesium, Milk Thistle, and trace minerals.",d:"Die-off may be mild. Start with low doses.",dr:"Focus on drainage first.",t:"Track symptoms before starting.",x:"Start with our drainage guide."},low:{g:"Your LOW score is reassuring. Prevention matters.",p:"Try digestive enzymes and probiotics.",d:"Die-off should be minimal.",dr:"Simple hydration supports drainage.",t:"Gentle maintenance during full moons.",x:"Check our blog for guides."},none:{g:"Hi! I'm the Clenzara Coach. Take the quiz above!",p:"We recommend Dr. Mercola Serrapeptase and Berberine.",d:"Use binders to manage die-off.",dr:"Support drainage before cleansing.",t:"Full Moon timing boosts results.",x:"Take the quiz for personalized advice!"}};
 const CQ=["What products?","What is die-off?","How to prep?","When to start?"];let co=false;
 function toggleCoach(){co=!co;document.getElementById('aiCoachPanel').style.display=co?'flex':'none';document.getElementById('aiCoachBtn').textContent=co?'✕':'💬';if(co&&!document.getElementById('aiCoachMsgs').children.length)showCG();}
@@ -259,5 +421,5 @@ function showCG(){const r=gR().toLowerCase(),d=CR[r]||CR.none,m=document.getElem
 function addM(role,t){const m=document.getElementById('aiCoachMsgs'),d=document.createElement('div');d.className='aim '+(role==='b'?'b':'u');d.textContent=t;m.appendChild(d);m.scrollTop=m.scrollHeight;}
 function hCQ(q){addM('u',q);document.querySelectorAll('.ai-qb').forEach(b=>b.remove());const r=gR().toLowerCase(),d=CR[r]||CR.none,ql=q.toLowerCase();let resp=d.x;if(ql.includes('product'))resp=d.p;else if(ql.includes('die'))resp=d.d;else if(ql.includes('prep'))resp=d.dr;else if(ql.includes('start'))resp=d.t;setTimeout(()=>{addM('b',resp);addM('b','⚠️ Consult a healthcare provider.')},600);}
 function sendCoachMsg(){const i=document.getElementById('aiCoachIn'),t=i.value.trim();if(!t)return;i.value='';addM('u',t);document.querySelectorAll('.ai-qb').forEach(b=>b.remove());const r=gR().toLowerCase(),d=CR[r]||CR.none,ql=t.toLowerCase();let resp=d.x;if(ql.includes('product')||ql.includes('buy'))resp=d.p;else if(ql.includes('die')||ql.includes('herx'))resp=d.d;else if(ql.includes('drainage')||ql.includes('prep'))resp=d.dr;else if(ql.includes('start')||ql.includes('moon'))resp=d.t;else if(ql.includes('hi')||ql.includes('hello'))resp=d.g;setTimeout(()=>{addM('b',resp);addM('b','⚠️ Consult a healthcare provider.')},600);}
+document.addEventListener('DOMContentLoaded', initQuiz);
 </script>
-</body></html>
