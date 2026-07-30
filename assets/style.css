@@ -737,11 +737,39 @@ article li { margin-bottom: 0.5rem; }
   border: 1px solid rgba(45,122,79,.2);
 }
 
+/* --- Hamburger Menu --- */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: var(--dark);
+  padding: .25rem .5rem;
+  line-height: 1;
+}
+.nav-links-open { display: flex !important; }
+
 /* --- Responsive --- */
 @media (max-width: 600px) {
   .form-row { flex-direction: column; }
   .hero h1 { font-size: 1.8rem; }
   .nav-links { display: none; }
+  .hamburger { display: block; }
+  .nav-links.nav-links-open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 1rem 5%;
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    gap: .75rem;
+    z-index: 99;
+  }
+  .nav-links.nav-links-open a { margin-left: 0; }
   .social-proof { gap: 1.5rem; }
   article h1, .legal-page h1 { font-size: 2rem; }
   .pin-image, .pin-image-left { float: none; margin: 1rem auto; max-width: 100%; }
