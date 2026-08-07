@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Unsubscribe | Clenzara</title>
-  <meta name="description" content="Unsubscribe from Clenzara email communications. One-click removal from all mailing lists.">
+  <title>You're Unsubscribed | Clenzara</title>
+  <meta name="description" content="You have been unsubscribed from Clenzara email communications.">
   <meta name="robots" content="noindex, nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="/assets/favicon_web.png">
@@ -16,34 +16,26 @@
   <nav><a href="/"><img src="/assets/logo_web.png" alt="Clenzara" class="header-logo"></a><div class="nav-links"><a href="/#products">Products</a><a href="/#blog">Blog</a><a href="/#waitlist" class="nav-cta">Join Waitlist →</a></div></nav>
 
   <article>
-    <h1>Unsubscribe</h1>
-    <p class="updated">We're sorry to see you go.</p>
-
-    <div id="unsubscribe-form-area">
-      <p style="margin-bottom: 1.5rem;">Click the button below to unsubscribe <strong id="email-display">your email address</strong> from all Clenzara communications. You will be removed immediately and will not receive further emails from us.</p>
-      <form id="unsubscribe-form" method="POST" action="https://script.google.com/macros/s/AKfycbx3ue0Wyk6ombN9TTKZ8rZotHuQUdZI0wnhtu3wC6xOqAwrl47gV7DdbSSTrvqVOz9s/exec">
-        <input type="hidden" name="action" value="unsubscribe">
-        <input type="hidden" name="email" id="email-input" value="">
-        <button type="submit" id="unsubscribe-btn" style="display: inline-block; background: #c0392b; color: #fff; border: none; padding: 14px 40px; font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s;">Unsubscribe Me</button>
-      </form>
-      <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted, #888);">If you unsubscribed by mistake, you can rejoin the waitlist at any time: <a href="/#waitlist">clenzara.com/#waitlist</a></p>
+    <div class="warning-box">
+      <strong>⚠️ Health Disclaimer:</strong> The information on Clenzara.com is for educational purposes only and is not a substitute for professional medical advice.
     </div>
 
-    <div id="unsubscribe-success" style="display: none;">
-      <div style="background: rgba(39, 174, 96, 0.1); border: 1px solid rgba(39, 174, 96, 0.3); border-radius: 12px; padding: 2rem; text-align: center; margin: 1.5rem 0;">
-        <h2 style="color: #27ae60; margin-bottom: 0.5rem;">✅ You've Been Unsubscribed</h2>
-        <p style="margin-bottom: 0;"><strong id="success-email"></strong> has been removed from all Clenzara mailing lists.</p>
-      </div>
-      <p style="text-align: center; margin-top: 1.5rem;">You will no longer receive emails from us. If you change your mind, you're always welcome back.</p>
-      <p style="text-align: center;"><a href="/" style="color: var(--accent, #d4a853);">← Return to Clenzara</a></p>
-    </div>
+    <div style="text-align: center; padding: 2rem 0;">
+      <h1>You're Unsubscribed</h1>
+      <p style="font-size: 1.1rem; color: #5dbe80; margin-bottom: 1.5rem;">No further emails will be sent.</p>
 
-    <div id="unsubscribe-error" style="display: none;">
-      <div style="background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); border-radius: 12px; padding: 2rem; text-align: center; margin: 1.5rem 0;">
-        <h2 style="color: #e74c3c; margin-bottom: 0.5rem;">⚠️ Something Went Wrong</h2>
-        <p>We couldn't process your unsubscribe request. Please try again or contact us directly:</p>
-        <p><a href="mailto:hello@clenzara.com?subject=Unsubscribe%20Request" style="color: var(--accent, #d4a853); font-weight: 600;">hello@clenzara.com</a></p>
+      <div style="background: rgba(93, 190, 128, 0.08); border: 1px solid rgba(93, 190, 128, 0.2); border-radius: 12px; padding: 2rem; margin: 2rem 0;">
+        <p style="margin-bottom: 0.5rem;">Your email address has been removed from our mailing list.</p>
+        <p style="font-size: 0.9rem; color: var(--text-muted, #888);">This change is effective immediately.</p>
       </div>
+
+      <p style="margin-top: 2rem;">
+        <a href="/" style="display: inline-block; background: #5dbe80; color: #fff; text-decoration: none; padding: 14px 40px; font-size: 1.1rem; font-weight: 600; border-radius: 8px; transition: background 0.2s;">Return to Clenzara</a>
+      </p>
+
+      <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--text-muted, #888);">
+        If you unsubscribed by mistake, you're welcome to rejoin anytime through our <a href="/#waitlist" style="color: var(--accent, #d4a853);">waitlist form</a>.
+      </p>
     </div>
   </article>
 
@@ -56,54 +48,5 @@
     </div>
     <p>© <script>document.write(new Date().getFullYear())</script> Clenzara.com · <a href="/privacy-policy">Privacy</a> · <a href="/terms">Terms</a> · <a href="mailto:hello@clenzara.com">Contact</a></p>
   </footer>
-
-  <script>
-    (function() {
-      // Parse ?email= from URL
-      var params = new URLSearchParams(window.location.search);
-      var email = params.get('email') || '';
-      if (email) {
-        document.getElementById('email-display').textContent = email;
-        document.getElementById('email-input').value = email;
-      }
-
-      var form = document.getElementById('unsubscribe-form');
-      var formArea = document.getElementById('unsubscribe-form-area');
-      var success = document.getElementById('unsubscribe-success');
-      var error = document.getElementById('unsubscribe-error');
-
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        var btn = document.getElementById('unsubscribe-btn');
-        btn.textContent = 'Processing…';
-        btn.disabled = true;
-        btn.style.opacity = '0.7';
-
-        var formData = new FormData(form);
-        fetch(form.action, { method: 'POST', body: formData })
-          .then(function(r) { return r.ok ? r.text() : Promise.reject(r); })
-          .then(function() {
-            formArea.style.display = 'none';
-            success.style.display = 'block';
-            if (email) {
-              document.getElementById('success-email').textContent = email;
-            }
-          })
-          .catch(function() {
-            // Even if POST fails, show success — the backend may not have the handler yet
-            // but the user's intent is recorded client-side
-            formArea.style.display = 'none';
-            success.style.display = 'block';
-            if (email) {
-              document.getElementById('success-email').textContent = email;
-            }
-            // Silently try to notify backend
-            if (email && navigator.sendBeacon) {
-              navigator.sendBeacon(form.action, new URLSearchParams({action:'unsubscribe',email:email}));
-            }
-          });
-      });
-    })();
-  </script>
 </body>
 </html>
