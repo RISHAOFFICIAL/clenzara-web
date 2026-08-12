@@ -98,7 +98,21 @@
     </div>
 
   </article>
-  <footer>
+  <!-- Lead Capture Form -->
+<section class="lead-capture" style="max-width: 600px; margin: 3rem auto; padding: 2rem; background: linear-gradient(145deg, rgba(45,122,79,0.08), rgba(26,46,26,0.12)); border: 1px solid rgba(212,168,67,0.3); border-radius: 12px; text-align: center;">
+  <h3 style="font-family: 'Playfair Display', serif; color: #d4a843; margin-bottom: 0.5rem; font-size: 1.3rem;">Get the Free 17 Signs Guide + Pro App Waitlist</h3>
+  <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 1.25rem;">Join our community for the free symptom checklist and early access to the Clenzara Pro wellness tracker.</p>
+  <form class="leadForm" onsubmit="return submitLeadForm(event)" style="display: flex; flex-direction: column; gap: 0.75rem; align-items: center;">
+    <input type="text" class="leadName" placeholder="First name (optional)" style="width: 100%; max-width: 360px; padding: 0.7rem 1rem; border: 1px solid rgba(212,168,67,0.4); border-radius: 6px; background: rgba(255,255,255,0.06); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem;">
+    <input type="email" class="leadEmail" placeholder="Your email address" required style="width: 100%; max-width: 360px; padding: 0.7rem 1rem; border: 1px solid rgba(212,168,67,0.4); border-radius: 6px; background: rgba(255,255,255,0.06); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem;">
+    <button type="submit" style="background: linear-gradient(135deg, #2d7a4f, #1a2e1a); color: #fff; border: 1px solid #d4a843; padding: 0.7rem 2rem; border-radius: 6px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.9rem; transition: all 0.2s;">Join the Waitlist</button>
+  </form>
+  <p class="leadError" style="display:none; color: #e74c3c; font-size: 0.8rem; margin-top: 0.5rem;"></p>
+  <p class="leadSuccess" style="display:none; color: #2d7a4f; font-size: 0.9rem; margin-top: 1rem; font-weight: 600;">You're on the list — check your inbox!</p>
+  <p style="font-size: 0.65rem; color: rgba(255,255,255,0.3); margin-top: 0.75rem;">No spam. No credit card. Unsubscribe anytime.</p>
+</section>
+
+<footer>
     <div class="footer-disclosure" style="max-width: 600px; margin: 0 auto 0.5rem; font-size: 0.7rem; background: rgba(255,255,255,0.04); padding: 1rem; border-radius: 8px; line-height: 1.6;">
       <strong>Affiliate Disclosure:</strong> Clenzara.com is a participant in the Amazon Services LLC Associates Program. We earn commissions from qualifying purchases made through links on this page at no additional cost to you.
     </div>
@@ -107,5 +121,9 @@
     </div>
     <p>© 2025 Clenzara.com · <a href="/#quiz">Wellness Quiz</a> · <a href="/privacy-policy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Use</a></p>
   </footer>
+
+<script>
+function submitLeadForm(e){e.preventDefault();var f=e.target||e.currentTarget;var n=(f.querySelector('.leadName')||{}).value||'';n=n.trim();var em=(f.querySelector('.leadEmail')||{}).value||'';em=em.trim();if(!em||em.indexOf('@')===-1){var er=f.parentNode.querySelector('.leadError');if(er){er.textContent='Please enter a valid email address.';er.style.display='block'}return false}if(typeof gtag!=='undefined'){gtag('event','waitlist_signup',{event_category:'conversion'})}var p=new URLSearchParams(window.location.search);fetch('https://script.google.com/macros/s/AKfycbx3ue0Wyk6ombN9TTKZ8rZotHuQUdZI0wnhtu3wC6xOqAwrl47gV7DdbSSTrvqVOz9s/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:em,utm_source:p.get('utm_source')||'direct',utm_medium:p.get('utm_medium')||'',utm_campaign:p.get('utm_campaign')||'',timestamp:new Date().toISOString()}),mode:'no-cors'});var su=f.parentNode.querySelector('.leadSuccess');if(su){su.style.display='block'}f.style.display='none';return false}
+</script>
 </body>
 </html>
