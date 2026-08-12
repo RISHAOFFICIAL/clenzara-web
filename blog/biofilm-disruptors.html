@@ -237,5 +237,9 @@
     <p>© 2025 Clenzara.com · <a href="/#quiz">Wellness Quiz</a> · <a href="/privacy-policy.html">Privacy Policy</a> · <a href="/terms.html">Terms of Use</a> · <a href="mailto:hello@clenzara.com">hello@clenzara.com</a></p>
   </footer>
 
+
+<script>
+function submitLeadForm(e){e.preventDefault();var f=e.target||e.currentTarget;var n=(f.querySelector('.leadName')||{}).value||'';n=n.trim();var em=(f.querySelector('.leadEmail')||{}).value||'';em=em.trim();if(!em||em.indexOf('@')===-1){var er=f.parentNode.querySelector('.leadError');if(er){er.textContent='Please enter a valid email address.';er.style.display='block'}return false}if(typeof gtag!=='undefined'){gtag('event','waitlist_signup',{event_category:'conversion'})}var p=new URLSearchParams(window.location.search);fetch('https://script.google.com/macros/s/AKfycbx3ue0Wyk6ombN9TTKZ8rZotHuQUdZI0wnhtu3wC6xOqAwrl47gV7DdbSSTrvqVOz9s/exec',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:em,utm_source:p.get('utm_source')||'direct',utm_medium:p.get('utm_medium')||'',utm_campaign:p.get('utm_campaign')||'',timestamp:new Date().toISOString()}),mode:'no-cors'});var su=f.parentNode.querySelector('.leadSuccess');if(su){su.style.display='block'}f.style.display='none';return false}
+</script>
 </body>
 </html>
